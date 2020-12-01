@@ -9,7 +9,8 @@
 <script>
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 import router from '../router/index.js'
 
 export default {

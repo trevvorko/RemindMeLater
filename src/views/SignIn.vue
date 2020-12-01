@@ -4,30 +4,34 @@
             <div class="col-lg-6 offset-lg-2 rounded shadow-lg p-3 mb-5 bg-white align-self-center d-inline-flex">
                 <div class="container m-2">
                     <h1>RemindMeLater!</h1>
+                    <h5>Sign In</h5>
                     <form>
                         <div class="row p-1">
                             <input v-model="forms[0].value" type="text" class="form-control" placeholder="Email">
-                            <span class="form-error" v-if="forms[0].error">{{ forms[0].error }}</span>
+                            <span class="text-danger" v-if="forms[0].error">{{ forms[0].error }}</span>
                         </div>         
                         <div class="row p-1">
                             <input v-model="forms[1].value" type="password" class="form-control" placeholder="Password">
-                            <span class="form-error" v-if="forms[1].error">{{ forms[1].error }}</span>
+                            <div class="text-danger" v-if="forms[1].error">{{ forms[1].error }}</div>
+                            <div v-if="!showSignUpScreen"><a v-on:click="forgotPassword" class="small">Forgot password?</a></div>
                         </div>
                         <transition name="fade">
                             <div v-if="showSignUpScreen" class="row p-1">
                                 <input v-model="forms[2].value" type="password" class="form-control" placeholder="Confirm Password">
-                                <span class="form-error" v-if="forms[2].error">{{ forms[2].error }}</span>
+                                <span class="text-danger" v-if="forms[2].error">{{ forms[2].error }}</span>
+
                             </div>
                         </transition>
-                        <div v-if="!showSignUpScreen" class="row p-1">
-                            <div class="col-md-4 offset-md-4">
-                                <button v-on:click="signIn()" type="button" class="btn btn-block btn-primary mx-auto">Sign In</button>
-                            </div>
-                        </div>
                         <div class="row p-1">
                             <div class="col-md-4 offset-md-4">
-                                <button v-if="!showSignUpScreen" v-on:click="showSignUpScreen=true;" type="button"  class="btn btn-secondary btn-block mx-auto">Create Account</button>
-                                <button v-if="showSignUpScreen" v-on:click="registerUser()" type="button"  class="btn btn-primary btn-block mx-auto">Create Account</button>
+                                <div v-if="showSignUpScreen">
+                                    <button v-on:click="registerUser()" type="button"  class="btn btn-primary btn-block mx-auto">Create Account</button>
+                                    <button v-on:click="showSignUpScreen=false;" type="button"  class="btn btn-secondary btn-block mx-auto">Back</button>
+                                </div>
+                                <div v-else>
+                                    <button v-on:click="signIn()" type="button" class="btn btn-block btn-primary mx-auto">Sign In</button>
+                                    <button v-on:click="showSignUpScreen=true;" type="button"  class="btn btn-secondary btn-block mx-auto">Create Account</button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -39,7 +43,8 @@
 
 <script>
 import router from '../router/index.js';
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 export default {
   name: 'SignIn',
@@ -74,10 +79,8 @@ export default {
             router.push("/");
           })
           .catch((error) => {
-              var errorCode = error.code;
-              console.log(errorCode);
-              var errorMessage = error.message;
-              console.log(errorMessage);
+              console.log(error.message);
+              this.forms[1].error = "Error signing in";
           });
         }
           
@@ -92,12 +95,13 @@ export default {
                 router.push("/");
             })
             .catch((error) => {
-                var errorCode = error.code;
-                console.log(errorCode);
-                var errorMessage = error.message;
-                console.log(errorMessage);
+                console.log(error.message);
+                this.forms[2].error = "Error creating account";
             });  
         }
+      },
+      forgotPassword: function() {
+          router.push("/forgot")
       }
   }
 }
@@ -114,7 +118,7 @@ var validate = function(showSignUpScreen, forms) {
         if (!element.value) {
             // Input form is empty
             hasError = true;
-            element.error = element.key + ' should not be blank';
+            element.error = element.key + ' should not be blank ';
         } else {
             element.error = '';
         }

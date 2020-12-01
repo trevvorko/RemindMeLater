@@ -2,7 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import SignIn from '../views/SignIn.vue'
-import firebase from 'firebase'
+import ForgotPassword from '../views/ForgotPassword.vue'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 Vue.use(VueRouter)
 
@@ -17,15 +19,21 @@ const routes = [
   },
   {
     path: '/signin',
-    name: 'SignIn',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    name: 'Sign In',
     component: SignIn,
     meta: {
       requiresAuth: false
     }
+  },
+  {
+    path: '/forgot',
+    name: 'Forgot Password',
+    component: ForgotPassword,
+    meta: {
+      requiresAuth: false
+    }
   }
+
 ]
 
 const router = new VueRouter({
