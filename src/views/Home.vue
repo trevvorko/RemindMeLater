@@ -17,7 +17,7 @@ export default {
   name: 'Home',
   data: function() {
     return {
-      classes: [{name: "EECS493"}],
+      classes: [],
     }
   },
   components: {
@@ -32,6 +32,21 @@ export default {
       .catch(function (error) {
         console.log(error);
       })
+    },
+    getCourses: function() {
+
+    },
+    addCourse: function() {
+
+    },
+    addTask: function() {
+
+    },
+    deleteCourse: function() {
+
+    },
+    deleteTask: function()  {
+
     }
   }
 }

@@ -44,6 +44,7 @@
 <script>
 import router from '../router/index.js';
 import firebase from 'firebase/app'
+import 'firebase/firestore';
 import 'firebase/auth'
 
 export default {
@@ -91,12 +92,18 @@ export default {
             let password = this.forms[1].value;
             firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((user) => {
-                console.log(user);
+                user.user.getIdToken().then(idToken => {
+                    var userRef = firebase.firestore().collection("users").doc(idToken);
+                    userRef.set({
+                        courses: []
+                    });
+                    window.location.href = "../html/homepage.html";
+                    return;
+                });
                 router.push("/");
             })
             .catch((error) => {
-                console.log(error.message);
-                this.forms[2].error = "Error creating account";
+                this.forms[2].error = error.message;
             });  
         }
       },
