@@ -1,17 +1,21 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-    <button v-on:click="signOut()">Sign Out</button>
+    <Nav/>
+    <div class="container">
+      <div v-for="(data, index) in courses" :key="index">
+        <Course :data="data"/>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Nav from '@/components/Nav.vue'
+import Course from '@/components/Course.vue'
+//import router from '@/router/index.js'
 import firebase from 'firebase/app'
 import 'firebase/auth'
-import router from '../router/index.js'
 
 export default {
   name: 'Home',
@@ -21,20 +25,13 @@ export default {
     }
   },
   components: {
-    HelloWorld
+    Nav,
+    Course
   },
   created: function() {
     this.setCourses();
   },
   methods: {
-    signOut: function() {
-      firebase.auth().signOut()
-      .then(function() {
-        router.push("/signin");
-      })
-      .catch(function () {
-      })
-    },
     setCourses: function() {
       var tempArray = this.courses;
       var idToken = firebase.auth().currentUser.uid;

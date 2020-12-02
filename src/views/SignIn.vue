@@ -29,7 +29,7 @@
                                     <button v-on:click="showSignUpScreen=false;" type="button"  class="btn btn-secondary btn-block mx-auto">Back</button>
                                 </div>
                                 <div v-else>
-                                    <button v-on:click="signIn()" type="button" class="btn btn-block btn-primary mx-auto">Sign In</button>
+                                    <button v-on:click="signIn" type="button" class="btn btn-block btn-primary mx-auto">Sign In</button>
                                     <button v-on:click="showSignUpScreen=true;" type="button"  class="btn btn-secondary btn-block mx-auto">Create Account</button>
                                 </div>
                             </div>
@@ -76,9 +76,11 @@ export default {
           let password = this.forms[1].value;
           firebase.auth().signInWithEmailAndPassword(email, password)
           .then(() => {
+            console.log("Signed in")
             router.push("/");
           })
           .catch((error) => {
+              console.log("Error")
               this.forms[1].error = error.message;
           });
         }
@@ -112,6 +114,10 @@ export default {
 var validate = function(showSignUpScreen, forms) {
     let hasError = false;
     forms.forEach(function(element) {
+        if ( (element.key === 'Confirmed password') && !showSignUpScreen ) {
+            // Only add error to full name and confirmed password if user is signing up	
+            return;	
+        }
         if (!element.value) { 
             // Input form is empty
             hasError = true;
