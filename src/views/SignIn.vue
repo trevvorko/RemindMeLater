@@ -75,13 +75,11 @@ export default {
           let email = this.forms[0].value;
           let password = this.forms[1].value;
           firebase.auth().signInWithEmailAndPassword(email, password)
-          .then((user) => {
-            console.log(user);
+          .then(() => {
             router.push("/");
           })
           .catch((error) => {
-              console.log(error.message);
-              this.forms[1].error = "Error signing in";
+              this.forms[1].error = error.message;
           });
         }
           

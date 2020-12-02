@@ -29,8 +29,7 @@ export default {
       .then(function() {
         router.push("/signin");
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch(function () {
       })
     },
     getCourses: function() {
