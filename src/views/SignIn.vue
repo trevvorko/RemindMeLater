@@ -95,7 +95,6 @@ export default {
                 userRef.set({
                     courses: []
                 });
-                window.location.href = "../html/homepage.html";
                 router.push("/");
             })
             .catch((error) => {
@@ -113,12 +112,7 @@ export default {
 var validate = function(showSignUpScreen, forms) {
     let hasError = false;
     forms.forEach(function(element) {
-        if ( (element.key === 'Full Name' || element.key === 'Confirmed password') && !showSignUpScreen ) {
-            // Only add error to full name and confirmed password if user is signing up
-            return;
-        }
-
-        if (!element.value) {
+        if (!element.value) { 
             // Input form is empty
             hasError = true;
             element.error = element.key + ' should not be blank ';
