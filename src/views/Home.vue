@@ -17,11 +17,14 @@ export default {
   name: 'Home',
   data: function() {
     return {
-      classes: [],
+      courses: []
     }
   },
   components: {
     HelloWorld
+  },
+  created: function() {
+    this.setCourses();
   },
   methods: {
     signOut: function() {
@@ -32,8 +35,22 @@ export default {
       .catch(function () {
       })
     },
-    getCourses: function() {
-
+    setCourses: function() {
+      var tempArray = this.courses;
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+       userRef.get().then(function(doc) {
+        if (doc.exists) {
+            var array = doc.data();
+            for (var i = 0; i < array.courses.length; ++i) {
+              var element = array.courses[i];
+              tempArray.push(element);
+              }
+          } else {
+            // idToken not found
+            console.log("No such document!");
+          }
+      });
     },
     addCourse: function() {
 
@@ -49,4 +66,5 @@ export default {
     }
   }
 }
+
 </script>

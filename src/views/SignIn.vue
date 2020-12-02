@@ -90,14 +90,12 @@ export default {
             let password = this.forms[1].value;
             firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((user) => {
-                user.user.getIdToken().then(idToken => {
-                    var userRef = firebase.firestore().collection("users").doc(idToken);
-                    userRef.set({
-                        courses: []
-                    });
-                    window.location.href = "../html/homepage.html";
-                    return;
+                var idToken = user.user.uid;
+                var userRef = firebase.firestore().collection("users").doc(idToken);
+                userRef.set({
+                    courses: []
                 });
+                window.location.href = "../html/homepage.html";
                 router.push("/");
             })
             .catch((error) => {
