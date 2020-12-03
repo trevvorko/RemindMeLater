@@ -1,7 +1,9 @@
 <template>
   <div class="home">
     <Nav/>
+    
     <div class="container">
+      <button v-on:click="addCourse" class="btn btn-putline-primary my-2 mh-sm-0">Add Course</button>
       <div v-for="(data, index) in courses" :key="index">
         <Course :data="data"/>
       </div>
@@ -11,6 +13,7 @@
 
 <script>
 // @ is an alias to /src
+import Vue from 'vue'
 import Nav from '@/components/Nav.vue'
 import Course from '@/components/Course.vue'
 //import router from '@/router/index.js'
@@ -50,7 +53,12 @@ export default {
       });
     },
     addCourse: function() {
-
+      this.$dialog.prompt("Input course name",Text).then(result=>{
+        var ComponentClass = Vue.extend(Course)
+        var instance = new ComponentClass()
+        this.$dialog.alert(result.data)
+        this.courses.push(instance)
+      })
     },
     addTask: function() {
 
