@@ -56,7 +56,7 @@ export default {
       this.$dialog.prompt("Input course name",Text).then(result=>{
         var ComponentClass = Vue.extend(Course)
         var instance = new ComponentClass()
-        this.$dialog.alert(result.data)
+        instance.title = result.data
         this.courses.push(instance)
       })
     },
