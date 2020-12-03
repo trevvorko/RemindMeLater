@@ -7,7 +7,7 @@
       <ul id="CourseList">
         <li v-for="(data, index) in courses" :key="index">
           <Course :data="data"/>
-          <button v-on:click="deleteCourse(index)" class="btn btn-putline-primary my-2 mh-sm-0">Remove Course</button>
+          <button v-on:click="deleteCourse(index)" class="btn btn-outline-danger my-2 mh-sm-0">Remove Course</button>
         </li>
       </ul>
     </div>
