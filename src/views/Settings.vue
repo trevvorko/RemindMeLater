@@ -2,7 +2,7 @@
     <div>
         <Nav/>
         <div class="container">
-            <div class="card">
+            <div class="card mt-5">
                 <div class="card-body">
                     <h2 class="card-title">User Profile</h2>
                     <div><h6>Email</h6><p>{{ getUserEmail() }}</p></div>
@@ -26,6 +26,17 @@
                             <span class="text-success" v-if="successMessage">{{successMessage}}</span>
                         </div>
                     </form>
+                </div>
+            </div>
+            <div class="card mt-5 bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Acknowledgements</h2>
+                    <div>
+                        <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+                        <div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+                        <div>Icons made by <a href="https://www.flaticon.com/authors/becris" title="Becris">Becris</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+                    </div>
+
                 </div>
             </div>
         </div>

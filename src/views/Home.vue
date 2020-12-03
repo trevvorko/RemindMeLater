@@ -2,13 +2,16 @@
   <div class="home">
     <Nav/>
     
-    <div class="container">
-      <button v-on:click="addCourse" class="btn btn-putline-primary my-2 mh-sm-0">Add Course</button>
+    <div class="container align-center">
+      <form class="dropdown-menu p-4" autocomplete="off">
+          <div class="form-group">
+            <input v-model="courseName" type="test" class="form-control my-1" id="taskTitleInput" placeholder="Course Name">
+            <button type="submit" v-on:click="addCourse" class="btn btn-primary mt-1">Add Course</button>
+          </div>
+      </form>
+      <button data-toggle="dropdown" class="btn btn-outline-primary my-2 mh-sm-0 ">Add Course</button>
       <ul id="CourseList">
-        <li v-for="(data, index) in courses" :key="index">
-          <Course :data="data"/>
-          <button v-on:click="deleteCourse(index)" class="btn btn-outline-danger my-2 mh-sm-0">Remove Course</button>
-        </li>
+        <li v-for="(data, index) in courses" :key="index"><Course :data="data"/></li>
       </ul>
     </div>
   </div>
@@ -27,7 +30,8 @@ export default {
   name: 'Home',
   data: function() {
     return {
-      courses: []
+      courses: [],
+      courseName: ''
     }
   },
   components: {
@@ -56,9 +60,7 @@ export default {
       });
     },
     addCourse: function() {
-      this.$dialog.prompt("Input course name",Text).then(result=>{
-        this.courses.push({title: result.data,reminders: []})
-      })
+      this.courses.push({title: this.courseName, reminders: []})
     },
     deleteCourse: function(index) {
       this.courses.splice(index,1)
@@ -70,8 +72,6 @@ export default {
 
 <style scoped>
   #CourseList{
-    display:flex;
-    flex-wrap:wrap;
-    list-style:none;
+    list-style: none;
   }
 </style>
