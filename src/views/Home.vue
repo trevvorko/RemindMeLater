@@ -4,16 +4,19 @@
     
     <div class="container">
       <button v-on:click="addCourse" class="btn btn-putline-primary my-2 mh-sm-0">Add Course</button>
-      <div v-for="(data, index) in courses" :key="index">
-        <Course :data="data"/>
-      </div>
+      <ul id="CourseList">
+        <li v-for="(data, index) in courses" :key="index">
+          <Course :data="data"/>
+          <button v-on:click="deleteCourse(index)" class="btn btn-putline-primary my-2 mh-sm-0">Remove Course</button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Vue from 'vue'
+//import Vue from 'vue'
 import Nav from '@/components/Nav.vue'
 import Course from '@/components/Course.vue'
 //import router from '@/router/index.js'
@@ -54,22 +57,21 @@ export default {
     },
     addCourse: function() {
       this.$dialog.prompt("Input course name",Text).then(result=>{
-        var ComponentClass = Vue.extend(Course)
-        var instance = new ComponentClass()
-        instance.title = result.data
-        this.courses.push(instance)
+        this.courses.push({title: result.data,reminders: []})
       })
     },
-    addTask: function() {
-
-    },
-    deleteCourse: function() {
-
-    },
-    deleteTask: function()  {
-
+    deleteCourse: function(index) {
+      this.courses.splice(index,1)
     }
   }
 }
 
 </script>
+
+<style scoped>
+  #CourseList{
+    display:flex;
+    flex-wrap:wrap;
+    list-style:none;
+  }
+</style>
