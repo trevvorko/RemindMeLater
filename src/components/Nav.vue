@@ -1,12 +1,12 @@
 <template>
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand mb-0 h1" href="#">RemindMeLater</a>
+        <router-link class="navbar-brand mb-0 h1" to="/">RemindMeLater</router-link>
         <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-display="static" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img  height="30" width="30" src="@/assets/user.svg" alt="user icon"></a>
+            <a class="nav-link dropdown-toggle" role="button" data-display="static" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img  height="30" width="30" src="@/assets/user.svg" alt="user icon"></a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-              <a v-on:click="home" class="dropdown-item" href="#"><img src="@/assets/home.svg" height="15" width="15"> Home</a>
-              <a v-on:click="settings" class="dropdown-item" href="#"><img src="@/assets/settings.svg" height="15" width="15"> Settings</a>
-              <a v-on:click="signOut" class="dropdown-item text-danger" href="#"><img src="@/assets/sign-out.svg" height="15" width="15"> Sign out</a>
+              <router-link to="/" class="dropdown-item"><img src="@/assets/home.svg" height="15" width="15"> Home</router-link>
+              <router-link to="/settings" class="dropdown-item" ><img src="@/assets/settings.svg" height="15" width="15"> Settings</router-link>
+              <button v-on:click="signOut" class="dropdown-item text-danger" ><img src="@/assets/sign-out.svg" height="15" width="15"> Sign out</button>
             </div>
         </div>
     </nav>
@@ -28,12 +28,6 @@ export default {
       })
       .catch(function () {
       })
-    },
-    settings: function() {
-      router.push('/settings')
-    },
-    home: function() {
-      router.push('/')
     }
   }
 }
