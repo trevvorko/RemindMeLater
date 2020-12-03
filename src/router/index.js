@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import SignIn from '../views/SignIn.vue'
-import ForgotPassword from '../views/ForgotPassword.vue'
+import Home from '@/views/Home.vue'
+import SignIn from '@/views/SignIn.vue'
+import ForgotPassword from '@/views/ForgotPassword.vue'
+import Settings from "@/views/Settings.vue"
 import firebase from 'firebase/app'
 import 'firebase/auth'
 
@@ -31,6 +32,14 @@ const routes = [
     component: ForgotPassword,
     meta: {
       requiresAuth: false
+    }
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
+    meta: {
+      requiresAuth: true
     }
   }
 

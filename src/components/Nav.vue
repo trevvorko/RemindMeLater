@@ -4,7 +4,8 @@
         <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-display="static" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img  height="30" width="30" src="@/assets/user.svg" alt="user icon"></a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-              <a class="dropdown-item" href="#"><img src="@/assets/settings.svg" height="15" width="15"> Settings</a>
+              <a v-on:click="home" class="dropdown-item" href="#"><img src="@/assets/home.svg" height="15" width="15"> Home</a>
+              <a v-on:click="settings" class="dropdown-item" href="#"><img src="@/assets/settings.svg" height="15" width="15"> Settings</a>
               <a v-on:click="signOut" class="dropdown-item text-danger" href="#"><img src="@/assets/sign-out.svg" height="15" width="15"> Sign out</a>
             </div>
         </div>
@@ -28,6 +29,12 @@ export default {
       .catch(function () {
       })
     },
+    settings: function() {
+      router.push('/settings')
+    },
+    home: function() {
+      router.push('/')
+    }
   }
 }
 </script>
