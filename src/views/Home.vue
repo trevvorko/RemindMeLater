@@ -49,7 +49,7 @@ export default {
       var tempArray = this.courses;
       var idToken = firebase.auth().currentUser.uid;
       var userRef = firebase.firestore().collection("users").doc(idToken);
-       userRef.get().then(function(doc) {
+      userRef.get().then(function(doc) {
         if (doc.exists) {
             var array = doc.data();
             for (var i = 0; i < array.courses.length; ++i) {
@@ -69,6 +69,10 @@ export default {
       }
       let course = {title: this.courseName, reminders: [], created: firebase.firestore.Timestamp.now(), color: 'black'}
       this.courses.push(course)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.update({"courses":firebase.firestore.FieldValue.arrayUnion(course)});
+      console.log("pushed");
       this.courseName = '';
     },
     deleteCourse: function(index) {
