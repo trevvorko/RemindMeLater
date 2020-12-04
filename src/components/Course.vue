@@ -234,19 +234,22 @@ export default {
       });
     },
     removeTask: function(key, mainKey){
-      let index = this.reminders.findIndex(x => key === x.created.seconds);
-      this.reminders.splice(index, 1)
-      var idToken = firebase.auth().currentUser.uid;
-      var userRef = firebase.firestore().collection("users").doc(idToken);
-     userRef.get().then(function(doc) {
-        var data = doc.data();
-        var oldCourses = data["courses"];
-        let mainIndex = oldCourses.findIndex(x => x.created.seconds === mainKey)
-        var oldTasks = oldCourses[mainIndex];
-        var oldReminders = oldTasks["reminders"];
-        oldReminders.splice(index, 1);
-        userRef.set(data);
-      });
+      if (confirm("Remove this task?")) {
+        let index = this.reminders.findIndex(x => key === x.created.seconds);
+        this.reminders.splice(index, 1)
+        var idToken = firebase.auth().currentUser.uid;
+        var userRef = firebase.firestore().collection("users").doc(idToken);
+        userRef.get().then(function(doc) {
+            var data = doc.data();
+            var oldCourses = data["courses"];
+            let mainIndex = oldCourses.findIndex(x => x.created.seconds === mainKey)
+            var oldTasks = oldCourses[mainIndex];
+            var oldReminders = oldTasks["reminders"];
+            oldReminders.splice(index, 1);
+            userRef.set(data);
+        });
+      }
+      
     },
     formatDate: function(dueDate){
       const d = new firebase.firestore.Timestamp(dueDate.seconds, dueDate.nanoseconds).toDate();
