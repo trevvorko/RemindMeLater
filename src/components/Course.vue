@@ -8,10 +8,10 @@
               Change Color
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <button class="btn" v-for="color in possibleColors" :key="color" v-on:click="changeColor(color)">{{color}}</button>
+              <button class="btn" v-for="color in possibleColors" :key="color" v-on:click="changeColor(color, mainKey)" v-bind:style="{color: color}">{{color}}</button>
             </div>
           </div>
-          <button v-if="editMode" v-on:click="removeFunction(data.created.seconds)" class="btn btn-lg btn-danger my-3 mx-2 mh-sm-0">X</button> 
+          <button v-if="editMode" v-on:click="removeFunction(data.created.seconds, mainKey)" class="btn btn-lg btn-danger my-3 mx-2 mh-sm-0">X</button> 
         </div>
       </div>
       <div class="card-body">
@@ -37,7 +37,7 @@
                   <span v-else>Due: {{ formatDate(reminder.due) }}</span>
                 </div>
                 <div class="col my-auto">
-                  <button v-if="!editMode" v-on:click="completeTask(reminder.created.seconds)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
+                  <button v-if="!editMode" v-on:click="completeTask(reminder.created.seconds, mainKey)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
                   <span v-if="reminder.completed">
                     &check;
                   </span>
@@ -45,7 +45,7 @@
                     -
                   </span>
                 </button>
-                <button v-if="editMode" v-on:click="removeTask(reminder.created.seconds)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
+                <button v-if="editMode" v-on:click="removeTask(reminder.created.seconds, mainKey)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
                 </div>
               </div>
             </li>
@@ -61,7 +61,7 @@
             <label for="dueDateInput">Due Date</label>
             <input v-model="taskDate" type="date" class="form-control" id="dueDateInput">
           </div>
-          <button type="submit" v-on:click="addTask" class="btn btn-primary">Add Task</button>
+          <button type="submit" v-on:click="addTask(mainKey)" class="btn btn-primary">Add Task</button>
         </form>
         <button data-toggle="dropdown" class="btn btn-block btn-outline-primary my-2 mh-sm-0 ">Add Task</button>
       </div>
@@ -78,7 +78,7 @@ export default {
     data: Object,
     editMode: Boolean,
     removeFunction: Function,
-    mainIndex: Number
+    mainKey: Number
   },
   data: function(){
     return{
@@ -132,15 +132,36 @@ export default {
         this.sortBy = 'ascending'
       }
     },
-    changeColor: function(newColor) {
+    changeColor: function(newColor, mainKey) {
       this.color = newColor;
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        let mainIndex = oldCourses.findIndex(x => x.created.seconds === mainKey)
+        var oldCourse = oldCourses[mainIndex];
+        oldCourse["color"] = newColor;
+        userRef.set(data);
+      });
     },
-    completeTask: function(key) {
-      console.log(key)
-      let index = this.reminders.findIndex(x => x.created.seconds == key);
-      this.reminders[index].completed = !this.reminders[index].completed
+    completeTask: function(key, mainKey) {
+      let index = this.reminders.findIndex(x => x.created.seconds === key);
+      this.reminders[index].completed = !this.reminders[index].completed;
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        let mainIndex = oldCourses.findIndex(x => x.created.seconds === mainKey)
+        var oldTasks = oldCourses[mainIndex];
+        var oldReminders = oldTasks["reminders"];
+        var oldReminder = oldReminders[index];
+        oldReminder.completed = !oldReminder.completed;
+        userRef.set(data);
+      });
     },
-    addTask: function(){
+    addTask: function(mainKey){
       if (this.taskName.trim() === '') {
         this.taskName = ''
         this.taskDate = ''
@@ -153,16 +174,38 @@ export default {
         alert("Task date should not be empty")
         return;
       }
-      let date = firebase.firestore.Timestamp.fromDate(new Date(this.taskDate));
-      let reminder = {name:this.taskName, due:date, completed:false, created: firebase.firestore.Timestamp.now()}
+      var parts = this.taskDate.split('-');
+      var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
+      let date = firebase.firestore.Timestamp.fromDate(mydate);
+      var reminder = {name:this.taskName, due:date, completed:false, created: firebase.firestore.Timestamp.now()}
       this.reminders.push(reminder)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+     userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        let mainIndex = oldCourses.findIndex(x => x.created.seconds === mainKey)
+        var oldReminders = oldCourses[mainIndex];
+        oldReminders["reminders"].push(reminder);
+        userRef.set(data);
+      });
       this.taskName = ''
       this.taskDate = ''
     },
-    removeTask: function(key){
-      console.log(key)
-      let index = this.reminders.findIndex(x => x.created.seconds == key);
+    removeTask: function(key, mainKey){
+      let index = this.reminders.findIndex(x => key === x.created.seconds);
       this.reminders.splice(index, 1)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+     userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        let mainIndex = oldCourses.findIndex(x => x.created.seconds === mainKey)
+        var oldTasks = oldCourses[mainIndex];
+        var oldReminders = oldTasks["reminders"];
+        oldReminders.splice(index, 1);
+        userRef.set(data);
+      });
     },
     formatDate: function(dueDate){
       const d = new firebase.firestore.Timestamp(dueDate.seconds, dueDate.nanoseconds).toDate();

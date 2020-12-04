@@ -12,7 +12,7 @@
       <button v-on:click="editMode=!editMode;" class="btn btn-outline-secondary my-2 mh-sm-0 "><span v-if="editMode">Done</span><span v-else>Edit</span></button>
       <ul id="CourseList">
         <li v-for="data in courses" :key="data.created.seconds">
-          <Course :data="data" :editMode="editMode" :removeFunction="deleteCourse"/>
+          <Course :data="data" :editMode="editMode" :removeFunction="deleteCourse" :mainKey="data.created.seconds"/>
         </li>
       </ul>
     </div>
@@ -49,7 +49,7 @@ export default {
       var tempArray = this.courses;
       var idToken = firebase.auth().currentUser.uid;
       var userRef = firebase.firestore().collection("users").doc(idToken);
-       userRef.get().then(function(doc) {
+      userRef.get().then(function(doc) {
         if (doc.exists) {
             var array = doc.data();
             for (var i = 0; i < array.courses.length; ++i) {
@@ -69,11 +69,23 @@ export default {
       }
       let course = {title: this.courseName, reminders: [], created: firebase.firestore.Timestamp.now(), color: 'black'}
       this.courses.push(course)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.update({"courses":firebase.firestore.FieldValue.arrayUnion(course)});
       this.courseName = '';
     },
     deleteCourse: function(key) {
       let index = this.course.findIndex(x => x.created.seconds === key)
       this.courses.splice(index,1)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        oldCourses.splice(index,1);
+        userRef.set(data);
+      });
+
     }
   }
 }
