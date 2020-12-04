@@ -3,13 +3,13 @@
     <Nav/>
     <div class="container align-center">
       <span v-if="courses.length === 0">No courses found, click the add course button to get started!</span>
+      <button data-toggle="dropdown" class="btn btn-outline-primary my-2 mh-sm-0 mx-5">Add Course</button>
       <form class="dropdown-menu p-4" autocomplete="off">
           <div class="form-group">
             <input v-model="courseName" type="test" class="form-control my-1" id="taskTitleInput" placeholder="Course Name">
             <button type="submit" v-on:click="addCourse" class="btn btn-primary mt-1">Add Course</button>
-          </div>
+          </div>  
       </form>
-      <button data-toggle="dropdown" class="btn btn-outline-primary my-2 mh-sm-0 mx-5">Add Course</button>
       <button v-if="courses.length !== 0" v-on:click="editMode=!editMode;" class="btn btn-outline-secondary my-2 mh-sm-0 "><span v-if="editMode">Done</span><span v-else>Edit</span></button>
       <ul id="CourseList">
         <li v-for="data in courses" :key="data.created.seconds">
