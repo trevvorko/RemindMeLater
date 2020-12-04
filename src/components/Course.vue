@@ -1,13 +1,43 @@
 <template>
     <div class="card my-3 bg-light">
-      <h5 class="card-header">{{ data.title }}</h5>
+      <div class="card-header">
+        <div class="row justify-content-between">
+          <h3 class="my-auto mx-4" v-bind:style="{color: this.color}">{{ data.title }}</h3>
+          <div v-if="editMode" class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Change Color
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <button class="btn" v-for="color in possibleColors" :key="color" v-on:click="changeColor(color)">{{color}}</button>
+            </div>
+          </div>
+          <button v-if="editMode" v-on:click="removeFunction(mainIndex)" class="btn btn-lg btn-danger my-3 mx-2 mh-sm-0">X</button> 
+        </div>
+      </div>
       <div class="card-body">
-        <ul id="TaskList" class="container text-center align-middle">
-            <li v-for='(reminder, index) in reminders' :key="index" class="row">
-              <div class="col-12">
-                <strike v-if="reminder.completed == true">{{ reminder.name }}, Due: {{ formatDate(reminder.due) }}</strike>
-                <span v-else>{{ reminder.name }}, Due: {{ formatDate(reminder.due) }}</span>
-                <button v-on:click="completeTask(index)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
+        <div class="row text-center">
+                <div class="col">
+                  <h5>Name</h5>
+                </div>
+                <div class="col">
+                  <h5 v-on:click="changeSort">Date<img height="18" width="18" src="@/assets/arrow.svg" v-bind:class="[sortBy==='ascending' ? 'down' : '']"></h5>
+                </div>
+                <div class="col">
+                </div>
+        </div>
+        <ul id="TaskList" class="container">
+            <li v-for='(reminder, index) in sortedArray' :key="reminder.created.seconds">
+              <div class="row text-center">
+                <div class="col my-auto">
+                  <strike v-if="reminder.completed === true">{{ reminder.name }}</strike>
+                  <span v-else>{{ reminder.name }}</span>
+                </div>
+                <div class="col my-auto">
+                  <strike v-if="reminder.completed === true">Due: {{ formatDate(reminder.due) }}</strike>
+                  <span v-else>Due: {{ formatDate(reminder.due) }}</span>
+                </div>
+                <div class="col my-auto">
+                  <button v-if="!editMode" v-on:click="completeTask(index)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
                   <span v-if="reminder.completed">
                     &check;
                   </span>
@@ -15,7 +45,8 @@
                     -
                   </span>
                 </button>
-                <button v-on:click="removeTask(index)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
+                <button v-if="editMode" v-on:click="removeTask(index)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
+                </div>
               </div>
             </li>
         </ul>
@@ -44,23 +75,87 @@ import 'firebase/firestore'
 export default {
   name: 'Course',
   props: {
-    data: Object
+    data: Object,
+    editMode: Boolean,
+    removeFunction: Function,
+    mainIndex: Number
   },
   data: function(){
     return{
+      color: this.data.color,
       reminders: this.data.reminders,
       taskName: '',
-      taskDate: ''
+      taskDate: '',
+      possibleColors: [
+          'blue',
+          'indigo',
+          'purple',
+          'pink',
+          'red',
+          'orange',
+          'green',
+          'teal',
+          'black'
+      ],
+      sortBy: 'ascending'
+    }
+  },
+  computed: {
+    sortedArray: function() {
+      const copy = [...this.reminders];
+      function descending(a, b) {
+          if (a.due.seconds > b.due.seconds)
+            return -1;
+          if (a.due.seconds < b.due.seconds)
+            return 1;
+          return 0;
+      }
+      function ascending(a, b) {
+          if (a.due.seconds < b.due.seconds)
+            return -1;
+          if (a.due.seconds > b.due.seconds)
+            return 1;
+          return 0;
+      }
+      if (this.sortBy === 'ascending') {
+        return copy.sort(ascending)
+      } else {
+        return copy.sort(descending)
+      }
     }
   },
   methods: {
+    changeSort: function() {
+      if (this.sortBy === 'ascending') {
+        this.sortBy = 'descending'
+      } else {
+        this.sortBy = 'ascending'
+      }
+    },
+    changeColor: function(newColor) {
+      this.color = newColor;
+    },
     completeTask: function(index) {
       this.reminders[index].completed = !this.reminders[index].completed
     },
     addTask: function(){
-      var name = this.taskName
-      var date = firebase.firestore.Timestamp.now();
-      this.reminders.push({name:name,due:date})
+      if (this.taskName.trim() === '') {
+        this.taskName = ''
+        this.taskDate = ''
+        alert("Task name should not be empty")
+        return;
+      }
+      if (this.taskDate.trim() === '') {
+        this.taskName = ''
+        this.taskDate = ''
+        alert("Task date should not be empty")
+        return;
+      }
+      let date = firebase.firestore.Timestamp.fromDate(new Date(this.taskDate));
+      let reminder = {name:this.taskName, due:date, completed:false, created: firebase.firestore.Timestamp.now()}
+      this.reminders.push(reminder)
+      this.taskName = ''
+      this.taskDate = ''
     },
     removeTask: function(index){
       this.reminders.splice(index, 1)
@@ -77,5 +172,11 @@ export default {
   #TaskList{
     list-style: none;
   }
+  .card {
+    border-width: 2.5px;
+  }
 
+  .down {
+    transform: rotate(180deg);
+  }
 </style>

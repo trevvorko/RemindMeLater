@@ -1,6 +1,6 @@
 <template>
     <nav class="navbar navbar-light bg-light">
-        <router-link class="navbar-brand mb-0 h1" to="/">RemindMeLater</router-link>
+        <router-link class="navbar-brand mb-0" to="/"><h1>RemindMeLater</h1></router-link>
         <div class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" role="button" data-display="static" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img  height="30" width="30" src="@/assets/user.svg" alt="user icon"></a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
