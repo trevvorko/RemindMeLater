@@ -72,11 +72,19 @@ export default {
       var idToken = firebase.auth().currentUser.uid;
       var userRef = firebase.firestore().collection("users").doc(idToken);
       userRef.update({"courses":firebase.firestore.FieldValue.arrayUnion(course)});
-      console.log("pushed");
       this.courseName = '';
     },
     deleteCourse: function(index) {
       this.courses.splice(index,1)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        oldCourses.splice(index,1);
+        userRef.set(data);
+      });
+
     }
   }
 }

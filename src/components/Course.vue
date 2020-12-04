@@ -8,7 +8,7 @@
               Change Color
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <button class="btn" v-for="color in possibleColors" :key="color" v-on:click="changeColor(color)">{{color}}</button>
+              <button class="btn" v-for="color in possibleColors" :key="color" v-on:click="changeColor(color, mainIndex)">{{color}}</button>
             </div>
           </div>
           <button v-if="editMode" v-on:click="removeFunction(mainIndex)" class="btn btn-lg btn-danger my-3 mx-2 mh-sm-0">X</button> 
@@ -45,7 +45,7 @@
                     -
                   </span>
                 </button>
-                <button v-if="editMode" v-on:click="removeTask(index)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
+                <button v-if="editMode" v-on:click="removeTask(index, mainIndex)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
                 </div>
               </div>
             </li>
@@ -132,10 +132,20 @@ export default {
         this.sortBy = 'ascending'
       }
     },
-    changeColor: function(newColor) {
+    changeColor: function(newColor, mainIndex) {
       this.color = newColor;
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        var oldCourse = oldCourses[mainIndex];
+        oldCourse["color"] = newColor;
+        userRef.set(data);
+      });
     },
     completeTask: function(index, mainIndex) {
+      console.log(index);
       this.reminders[index].completed = !this.reminders[index].completed;
       var idToken = firebase.auth().currentUser.uid;
       var userRef = firebase.firestore().collection("users").doc(idToken);
@@ -178,8 +188,18 @@ export default {
       this.taskName = ''
       this.taskDate = ''
     },
-    removeTask: function(index){
+    removeTask: function(index, mainIndex){
       this.reminders.splice(index, 1)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+     userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        var oldTasks = oldCourses[mainIndex];
+        var oldReminders = oldTasks["reminders"];
+        oldReminders.splice(index, 1);
+        userRef.set(data);
+      });
     },
     formatDate: function(dueDate){
       const d = new firebase.firestore.Timestamp(dueDate.seconds, dueDate.nanoseconds).toDate();
