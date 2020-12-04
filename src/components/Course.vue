@@ -31,18 +31,18 @@
             <li v-for='reminder in sortedArray' :key="reminder.created.seconds">
               <div class="row text-center">
                 <div v-if="editMode" class = "col col-sm">
-                  <button v-if="editMode && !reminder.completed && !taskEditMode" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds;editName=reminder.name" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">Edit</button>
-                  <button v-if="editMode && !reminder.completed && taskEditMode" v-on:click="taskEditMode=!taskEditMode" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">Cancel</button>
+                  <button v-if="editMode && !reminder.completed && (!taskEditMode || (taskEditMode && editKey!=reminder.created.seconds))" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds;editName=reminder.name;setEditDate(reminder.due)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">Edit</button>
+                  <button v-if="editMode && !reminder.completed && taskEditMode && editKey==reminder.created.seconds" v-on:click="taskEditMode=!taskEditMode" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">Cancel</button>
                   <button v-if="taskEditMode && editKey==reminder.created.seconds" v-on:click="editTask(reminder.created.seconds,mainKey);taskEditMode=!taskEditMode;" class="btn btn-sm btn-outline-primary my-3 mx-2 mh-sm-0">Done</button>
                 </div>
                 <div class="col my-auto">
                   <strike v-if="reminder.completed === true">{{ reminder.name }}</strike>
-                  <input v-else-if="taskEditMode && editKey === reminder.created.seconds" v-model="editName" type="text">
+                  <input v-else-if="editMode && taskEditMode && editKey === reminder.created.seconds" v-model="editName" type="text">
                   <span v-else>{{ reminder.name }}</span>
                 </div>
                 <div class="col my-auto">
                   <strike v-if="reminder.completed === true">Due: {{ formatDate(reminder.due) }}</strike>
-                  <input v-else-if="taskEditMode && editKey === reminder.created.seconds" v-model="editDate" type="date">
+                  <input v-else-if="editMode && taskEditMode && editKey === reminder.created.seconds" v-model="editDate" type="date">
                   <span v-else>Due: {{ formatDate(reminder.due) }}</span>
                 </div>
                 <div class="col my-auto">
@@ -187,9 +187,11 @@ export default {
         alert("Task date should not be empty")
         return;
       }
+      console.log(this.taskDate)
       var parts = this.taskDate.split('-');
       var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
       let date = firebase.firestore.Timestamp.fromDate(mydate);
+      console.log(mydate)
       var reminder = {name:this.taskName, due:date, completed:false, created: firebase.firestore.Timestamp.now()}
       this.reminders.push(reminder)
       var idToken = firebase.auth().currentUser.uid;
@@ -210,12 +212,6 @@ export default {
         this.editName = ''
         this.editDate = ''
         alert("Task name should not be empty")
-        return;
-      }
-      if (this.taskDate.trim() === '') {
-        this.editName = ''
-        this.editDate = ''
-        alert("Task date should not be empty")
         return;
       }
       let index = this.reminders.findIndex(x => key === x.created.seconds);
@@ -255,6 +251,12 @@ export default {
     formatDate: function(dueDate){
       const d = new firebase.firestore.Timestamp(dueDate.seconds, dueDate.nanoseconds).toDate();
       return d.toDateString()
+    },
+    setEditDate: function(date){
+      if (date){
+        this.editDate = date.toDate().toISOString().slice(0,10)
+        console.log(this.editDate)
+      }
     }
   }
 }
