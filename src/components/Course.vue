@@ -32,7 +32,7 @@
               <div class="row text-center">
                 <div v-if="editMode" class = "col col-sm">
                   <button v-if="editMode && !reminder.completed" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">Edit</button>
-                  <button v-if="taskEditMode" v-on:click="editTask(reminder.created.seconds,mainKey);taskEditMode=!taskEditMode;" class="btn btn-sm btn-outline-primary my-3 mx-2 mh-sm-0">Done</button>
+                  <button v-if="taskEditMode && editKey==reminder.created.seconds" v-on:click="editTask(reminder.created.seconds,mainKey);taskEditMode=!taskEditMode;" class="btn btn-sm btn-outline-primary my-3 mx-2 mh-sm-0">Done</button>
                 </div>
                 <div class="col my-auto">
                   <strike v-if="reminder.completed === true">{{ reminder.name }}</strike>
