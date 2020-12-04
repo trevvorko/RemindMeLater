@@ -11,7 +11,7 @@
               <button class="btn" v-for="color in possibleColors" :key="color" v-on:click="changeColor(color)">{{color}}</button>
             </div>
           </div>
-          <button v-if="editMode" v-on:click="removeFunction(mainIndex)" class="btn btn-lg btn-danger my-3 mx-2 mh-sm-0">X</button> 
+          <button v-if="editMode" v-on:click="removeFunction(data.created.seconds)" class="btn btn-lg btn-danger my-3 mx-2 mh-sm-0">X</button> 
         </div>
       </div>
       <div class="card-body">
@@ -26,7 +26,7 @@
                 </div>
         </div>
         <ul id="TaskList" class="container">
-            <li v-for='(reminder, index) in sortedArray' :key="reminder.created.seconds">
+            <li v-for='reminder in sortedArray' :key="reminder.created.seconds">
               <div class="row text-center">
                 <div class="col my-auto">
                   <strike v-if="reminder.completed === true">{{ reminder.name }}</strike>
@@ -37,7 +37,7 @@
                   <span v-else>Due: {{ formatDate(reminder.due) }}</span>
                 </div>
                 <div class="col my-auto">
-                  <button v-if="!editMode" v-on:click="completeTask(index)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
+                  <button v-if="!editMode" v-on:click="completeTask(reminder.created.seconds)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
                   <span v-if="reminder.completed">
                     &check;
                   </span>
@@ -45,7 +45,7 @@
                     -
                   </span>
                 </button>
-                <button v-if="editMode" v-on:click="removeTask(index)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
+                <button v-if="editMode" v-on:click="removeTask(reminder.created.seconds)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
                 </div>
               </div>
             </li>
@@ -135,7 +135,9 @@ export default {
     changeColor: function(newColor) {
       this.color = newColor;
     },
-    completeTask: function(index) {
+    completeTask: function(key) {
+      console.log(key)
+      let index = this.reminders.findIndex(x => x.created.seconds == key);
       this.reminders[index].completed = !this.reminders[index].completed
     },
     addTask: function(){
@@ -157,7 +159,9 @@ export default {
       this.taskName = ''
       this.taskDate = ''
     },
-    removeTask: function(index){
+    removeTask: function(key){
+      console.log(key)
+      let index = this.reminders.findIndex(x => x.created.seconds == key);
       this.reminders.splice(index, 1)
     },
     formatDate: function(dueDate){
