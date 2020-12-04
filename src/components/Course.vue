@@ -61,7 +61,7 @@
             <label for="dueDateInput">Due Date</label>
             <input v-model="taskDate" type="date" class="form-control" id="dueDateInput">
           </div>
-          <button type="submit" v-on:click="addTask" class="btn btn-primary">Add Task</button>
+          <button type="submit" v-on:click="addTask(mainIndex)" class="btn btn-primary">Add Task</button>
         </form>
         <button data-toggle="dropdown" class="btn btn-block btn-outline-primary my-2 mh-sm-0 ">Add Task</button>
       </div>
@@ -138,7 +138,7 @@ export default {
     completeTask: function(index) {
       this.reminders[index].completed = !this.reminders[index].completed
     },
-    addTask: function(){
+    addTask: function(mainIndex){
       if (this.taskName.trim() === '') {
         this.taskName = ''
         this.taskDate = ''
@@ -152,8 +152,17 @@ export default {
         return;
       }
       let date = firebase.firestore.Timestamp.fromDate(new Date(this.taskDate));
-      let reminder = {name:this.taskName, due:date, completed:false, created: firebase.firestore.Timestamp.now()}
+      var reminder = {name:this.taskName, due:date, completed:false, created: firebase.firestore.Timestamp.now()}
       this.reminders.push(reminder)
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+     userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        var oldReminders = oldCourses[mainIndex];
+        oldReminders["reminders"].push(reminder);
+        userRef.set(data);
+      });
       this.taskName = ''
       this.taskDate = ''
     },
