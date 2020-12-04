@@ -37,7 +37,7 @@
                   <span v-else>Due: {{ formatDate(reminder.due) }}</span>
                 </div>
                 <div class="col my-auto">
-                  <button v-if="!editMode" v-on:click="completeTask(index)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
+                  <button v-if="!editMode" v-on:click="completeTask(index, mainIndex)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
                   <span v-if="reminder.completed">
                     &check;
                   </span>
@@ -135,8 +135,20 @@ export default {
     changeColor: function(newColor) {
       this.color = newColor;
     },
-    completeTask: function(index) {
-      this.reminders[index].completed = !this.reminders[index].completed
+    completeTask: function(index, mainIndex) {
+      this.reminders[index].completed = !this.reminders[index].completed;
+      var idToken = firebase.auth().currentUser.uid;
+      var userRef = firebase.firestore().collection("users").doc(idToken);
+      userRef.get().then(function(doc) {
+        var data = doc.data();
+        var oldCourses = data["courses"];
+        var oldTasks = oldCourses[mainIndex];
+        var oldReminders = oldTasks["reminders"];
+        var oldReminder = oldReminders[index];
+        oldReminder.completed = !oldReminder.completed;
+        userRef.set(data);
+      });
+
     },
     addTask: function(mainIndex){
       if (this.taskName.trim() === '') {
