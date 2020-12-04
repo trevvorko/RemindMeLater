@@ -31,17 +31,18 @@
             <li v-for='reminder in sortedArray' :key="reminder.created.seconds">
               <div class="row text-center">
                 <div v-if="editMode" class = "col col-sm">
-                  <button v-if="editMode && !reminder.completed" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">Edit</button>
+                  <button v-if="editMode && !reminder.completed && !taskEditMode" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds;editName=reminder.name" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">Edit</button>
+                  <button v-if="editMode && !reminder.completed && taskEditMode" v-on:click="taskEditMode=!taskEditMode" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">Cancel</button>
                   <button v-if="taskEditMode && editKey==reminder.created.seconds" v-on:click="editTask(reminder.created.seconds,mainKey);taskEditMode=!taskEditMode;" class="btn btn-sm btn-outline-primary my-3 mx-2 mh-sm-0">Done</button>
                 </div>
                 <div class="col my-auto">
                   <strike v-if="reminder.completed === true">{{ reminder.name }}</strike>
-                  <input v-else-if="taskEditMode && editKey === reminder.created.seconds" v-model="taskName" type="text">
+                  <input v-else-if="taskEditMode && editKey === reminder.created.seconds" v-model="editName" type="text">
                   <span v-else>{{ reminder.name }}</span>
                 </div>
                 <div class="col my-auto">
                   <strike v-if="reminder.completed === true">Due: {{ formatDate(reminder.due) }}</strike>
-                  <input v-else-if="taskEditMode && editKey === reminder.created.seconds" v-model="taskDate" type="date">
+                  <input v-else-if="taskEditMode && editKey === reminder.created.seconds" v-model="editDate" type="date">
                   <span v-else>Due: {{ formatDate(reminder.due) }}</span>
                 </div>
                 <div class="col my-auto">
@@ -94,6 +95,8 @@ export default {
       reminders: this.data.reminders,
       taskName: '',
       taskDate: '',
+      editName:'',
+      editDate:'',
       possibleColors: [
           'blue',
           'indigo',
@@ -203,25 +206,25 @@ export default {
       this.taskDate = ''
     },
     editTask: function(key,mainKey){
-      if (this.taskName.trim() === '') {
-        this.taskName = ''
-        this.taskDate = ''
+      if (this.editName.trim() === '') {
+        this.editName = ''
+        this.editDate = ''
         alert("Task name should not be empty")
         return;
       }
       if (this.taskDate.trim() === '') {
-        this.taskName = ''
-        this.taskDate = ''
+        this.editName = ''
+        this.editDate = ''
         alert("Task date should not be empty")
         return;
       }
       let index = this.reminders.findIndex(x => key === x.created.seconds);
-      var parts = this.taskDate.split('-');
+      var parts = this.editDate.split('-');
       var mydate = new Date(parts[0], parts[1] - 1, parts[2]);
       let date = firebase.firestore.Timestamp.fromDate(mydate);
       this.reminders[index].due = date
-      this.reminders[index].name = this.taskName
-      var newReminder = {name:this.taskName, due:date, completed:this.reminders[index].completed,created:this.reminders[index].created}
+      this.reminders[index].name = this.editName
+      var newReminder = {name:this.editName, due:date, completed:this.reminders[index].completed,created:this.reminders[index].created}
       var idToken = firebase.auth().currentUser.uid;
       var userRef = firebase.firestore().collection("users").doc(idToken);
      userRef.get().then(function(doc) {
@@ -233,8 +236,6 @@ export default {
         oldReminders["reminders"][backIndex]=newReminder
         userRef.set(data);
       });
-      this.taskName = ''
-      this.taskDate = ''
     },
     removeTask: function(key, mainKey){
       let index = this.reminders.findIndex(x => key === x.created.seconds);
