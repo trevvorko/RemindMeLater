@@ -2,6 +2,7 @@
   <div class="home">
     <Nav/>
     <div class="container align-center">
+      <span v-if="courses.length === 0">No courses found, click the add course button to get started!</span>
       <form class="dropdown-menu p-4" autocomplete="off">
           <div class="form-group">
             <input v-model="courseName" type="test" class="form-control my-1" id="taskTitleInput" placeholder="Course Name">
@@ -9,7 +10,7 @@
           </div>
       </form>
       <button data-toggle="dropdown" class="btn btn-outline-primary my-2 mh-sm-0 mx-5">Add Course</button>
-      <button v-on:click="editMode=!editMode;" class="btn btn-outline-secondary my-2 mh-sm-0 "><span v-if="editMode">Done</span><span v-else>Edit</span></button>
+      <button v-if="courses.length !== 0" v-on:click="editMode=!editMode;" class="btn btn-outline-secondary my-2 mh-sm-0 "><span v-if="editMode">Done</span><span v-else>Edit</span></button>
       <ul id="CourseList">
         <li v-for="data in courses" :key="data.created.seconds">
           <Course :data="data" :editMode="editMode" :removeFunction="deleteCourse" :mainKey="data.created.seconds"/>
@@ -75,7 +76,7 @@ export default {
       this.courseName = '';
     },
     deleteCourse: function(key) {
-      let index = this.course.findIndex(x => x.created.seconds === key)
+      let index = this.courses.findIndex(x => x.created.seconds === key)
       this.courses.splice(index,1)
       var idToken = firebase.auth().currentUser.uid;
       var userRef = firebase.firestore().collection("users").doc(idToken);
