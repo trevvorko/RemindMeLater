@@ -7,11 +7,11 @@
                     <h5>Sign In</h5>
                     <form>
                         <div class="row p-1">
-                            <input v-model="forms[0].value" type="text" class="form-control" placeholder="Email">
+                            <input v-on:keydown.enter="signIn" v-model="forms[0].value" type="text" class="form-control" placeholder="Email">
                             <span class="text-danger" v-if="forms[0].error">{{ forms[0].error }}</span>
                         </div>         
                         <div class="row p-1">
-                            <input v-model="forms[1].value" type="password" class="form-control" placeholder="Password">
+                            <input v-on:keydown.enter="signIn" v-model="forms[1].value" type="password" class="form-control" placeholder="Password">
                             <div class="text-danger" v-if="forms[1].error">{{ forms[1].error }}</div>
                             <div v-if="!showSignUpScreen"><a v-on:click="forgotPassword" class="small">Forgot password?</a></div>
                         </div>
@@ -80,8 +80,8 @@ export default {
             router.push("/");
           })
           .catch((error) => {
-              console.log("Error")
-              this.forms[1].error = error.message;
+              console.log(error)
+              this.forms[1].error = "An error occurred while signing in. Confirm email and password are correct."
           });
         }
           
@@ -100,7 +100,13 @@ export default {
                 router.push("/");
             })
             .catch((error) => {
-                this.forms[2].error = error.message;
+                if (error.code === "auth/email-already-in-use") {
+                    this.forms[2].error = "Email is already in use"
+                } else {
+                    this.forms[2].error = "An error occurred while signing up"
+                }
+                
+                console.log(error.message)
             });  
         }
       },
@@ -121,7 +127,7 @@ var validate = function(showSignUpScreen, forms) {
         if (!element.value) { 
             // Input form is empty
             hasError = true;
-            element.error = element.key + ' should not be blank ';
+            element.error = element.key + " should not be blank. Please enter in a value for the " + element.key.toLowerCase();
         } else {
             element.error = '';
         }

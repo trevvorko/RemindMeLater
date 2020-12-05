@@ -25,6 +25,7 @@
                   <h5 v-on:click="changeSort">Date<img height="18" width="18" src="@/assets/arrow.svg" v-bind:class="[sortBy==='ascending' ? 'down' : '']"></h5>
                 </div>
                 <div class="col">
+                  <h5>Complete</h5>
                 </div>
         </div>
         <ul id="TaskList" class="container">
@@ -46,12 +47,12 @@
                   <span v-else>Due: {{ formatDate(reminder.due) }}</span>
                 </div>
                 <div class="col my-auto">
-                  <button v-if="!editMode" v-on:click="completeTask(reminder.created.seconds, mainKey)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">
+                  <button v-if="!editMode" v-on:click="completeTask(reminder.created.seconds, mainKey)" v-bind:class="[reminder.completed ? 'btn-success' : 'btn-outline-success']" class="btn btn-sm my-3 mx-2 mh-sm-0">
                   <span v-if="reminder.completed">
                     &check;
                   </span>
                   <span v-else>
-                    -
+                    <br>
                   </span>
                 </button>
                 <button v-if="editMode" v-on:click="removeTask(reminder.created.seconds, mainKey)" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">X</button> 
@@ -253,7 +254,7 @@ export default {
     },
     formatDate: function(dueDate){
       const d = new firebase.firestore.Timestamp(dueDate.seconds, dueDate.nanoseconds).toDate();
-      return d.toDateString()
+      return d.toLocaleDateString()
     },
     setEditDate: function(date){
       if (date){

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import SignIn from '@/views/SignIn.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
+import PageNotFound from '@/views/PageNotFound.vue'
 import Settings from "@/views/Settings.vue"
 import firebase from 'firebase/app'
 import 'firebase/auth'
@@ -41,8 +42,11 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  { 
+    path: "*",
+    component: PageNotFound
   }
-
 ]
 
 const router = new VueRouter({
@@ -51,15 +55,20 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   firebase.auth().onAuthStateChanged(function(user) {
-      if (to.matched.some(record => record.meta.requiresAuth)) {
-          if (!user) {
-              next({ path: '/signin' });
-          } else {
-              next();
-          }
-      } else {
-          next();
-      }
+    console.log(to)
+    if (user !== null && (to.path === "/signin" || to.path === "/forgot")) {
+      next({ path: "/"})
+      return;
+    }
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (!user) {
+            next({ path: '/signin' });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
   });
 });
 
