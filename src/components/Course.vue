@@ -16,23 +16,25 @@
       </div>
       <div class="card-body">
         <div class="row text-center">
-                <div v-if="editMode" class = "col col-sm">
-                </div>
-                <div class="col">
-                  <h5>Name</h5>
-                </div>
-                <div class="col">
-                  <h5 v-on:click="changeSort">Date<img height="18" width="18" src="@/assets/arrow.svg" v-bind:class="[sortBy==='ascending' ? 'down' : '']"></h5>
-                </div>
-                <div class="col">
-                  <h5>Complete</h5>
-                </div>
+            <div v-if="editMode" class="col">
+              <h5 v-if="editMode">Edit</h5>
+            </div>
+            <div class="col">
+              <h5>Name</h5>
+            </div>
+            <div class="col">
+              <h5 v-on:click="changeSort">Date<img height="18" width="18" src="@/assets/arrow.svg" v-bind:class="[sortBy==='ascending' ? 'down' : '']"></h5>
+            </div>
+            <div class="col">
+              <h5 v-if="editMode">Remove</h5>
+              <h5 v-else>Complete</h5>
+            </div>
         </div>
         <ul id="TaskList" class="container">
             <li v-for='reminder in sortedArray' :key="reminder.created.seconds">
               <div class="row text-center">
                 <div v-if="editMode" class = "col col-sm">
-                  <button v-if="editMode && !reminder.completed && (!taskEditMode || (taskEditMode && editKey!=reminder.created.seconds))" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds;editName=reminder.name;setEditDate(reminder.due)" class="btn btn-sm btn-outline-success my-3 mx-2 mh-sm-0">Edit</button>
+                  <button v-if="editMode && !reminder.completed && (!taskEditMode || (taskEditMode && editKey!=reminder.created.seconds))" v-on:click="taskEditMode=!taskEditMode;editKey = reminder.created.seconds;editName=reminder.name;setEditDate(reminder.due)" class="btn btn-sm btn-outline-success my-3">Edit</button>
                   <button v-if="editMode && !reminder.completed && taskEditMode && editKey==reminder.created.seconds" v-on:click="taskEditMode=!taskEditMode" class="btn btn-sm btn-outline-danger my-3 mx-2 mh-sm-0">Cancel</button>
                   <button v-if="taskEditMode && editKey==reminder.created.seconds" v-on:click="editTask(reminder.created.seconds,mainKey);taskEditMode=!taskEditMode;" class="btn btn-sm btn-outline-primary my-3 mx-2 mh-sm-0">Done</button>
                 </div>
