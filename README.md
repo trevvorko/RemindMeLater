@@ -1,4 +1,7 @@
-# remindmelater2
+# RemindMeLater
+
+## Project Info
+EECS 493 Final Project for trevorko, jododson, and aebopp. Uses Vue and Firebase to create a web app where users can store assignments and due dates for individual classes.
 
 ## Project setup
 ```
@@ -10,15 +13,3 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
